@@ -1,3 +1,4 @@
+import 'package:fampay_assignment/Widgets/contextual_card.dart';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -14,9 +15,8 @@ class _HomeScreenState extends State<HomeScreen> {
       appBar: AppBar(
         title: const Text('F A M P A Y'),
       ),
-      body: const Center(
-        child: Text('Hello World'),
-      ),
+      body: ContextualCards(),
+    
     );
   }
 }

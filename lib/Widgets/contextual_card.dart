@@ -83,13 +83,55 @@ class BigDisplayCard extends StatelessWidget {
           CachedNetworkImage(imageUrl: cardData.imageUrl),
           Text(
             cardData.title,
-            style: Theme.of(context).textTheme.headline6,
+            style: Theme.of(context).textTheme.titleLarge,
           ),
           Text(cardData.subtitle),
           ElevatedButton(
             onPressed: () => {}, // Add CTA action here
             child: Text(cardData.ctaText ?? 'Action'),
           ),
+        ],
+      ),
+    );
+  }
+}
+
+class SmallCardWithArrow extends StatelessWidget {
+  final CardData cardData;
+
+  const SmallCardWithArrow({required this.cardData});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: ListTile(
+        leading: CachedNetworkImage(imageUrl: cardData.imageUrl),
+        title: Text(cardData.title),
+        subtitle: Text(cardData.subtitle),
+        trailing: Icon(Icons.arrow_forward),
+        onTap: () => {}, // Add CTA action here
+      ),
+    );
+  }
+}
+
+class SmallDisplayCard extends StatelessWidget {
+  final CardData cardData;
+
+  const SmallDisplayCard({required this.cardData});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          CachedNetworkImage(imageUrl: cardData.imageUrl),
+          Text(
+            cardData.title,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
+          Text(cardData.subtitle),
         ],
       ),
     );
