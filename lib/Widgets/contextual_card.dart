@@ -11,10 +11,11 @@ class HomeScreen extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
-        title: Image.network(
-          'https://your-fampay-logo-url.com/logo.png',
-          height: 30,
-        ),
+        title: const Text(
+          'F A M P A Y',
+          style: TextStyle(color: Colors.black),
+        ), 
+        centerTitle: true, 
       ),
       body: ListView(
         padding: const EdgeInsets.all(16),
@@ -101,8 +102,8 @@ class HomeScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                Image.network(
-                  'https://your-mascot-url.com/mascot.png',
+                Image.asset(
+                  'assets/Group 336.png',
                   height: 60,
                 ),
                 const SizedBox(width: 16),
