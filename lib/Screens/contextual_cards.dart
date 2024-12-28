@@ -1,6 +1,4 @@
-import 'package:fampay_assignment/models/card_CTA.dart';
 import 'package:fampay_assignment/models/card_model.dart' as card_model;
-// Add this line to import CardCTA
 import 'package:fampay_assignment/models/card_model.dart';
 import 'package:fampay_assignment/services/api_services.dart';
 import 'package:flutter/material.dart';
@@ -21,7 +19,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
   final Set<int> _remindLaterCards = {};
   List<card_model.CardGroup> _cardGroups = [];
   bool _isLoading = true;
-  
+
   @override
   void initState() {
     super.initState();
@@ -37,10 +35,18 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       _dismissedCards.addAll(
-        prefs.getStringList('dismissed_cards')?.map(int.parse).whereType<int>() ?? [],
+        prefs
+                .getStringList('dismissed_cards')
+                ?.map(int.parse)
+                .whereType<int>() ??
+            [],
       );
       _remindLaterCards.addAll(
-        prefs.getStringList('remind_later_cards')?.map(int.parse).whereType<int>() ?? [],
+        prefs
+                .getStringList('remind_later_cards')
+                ?.map(int.parse)
+                .whereType<int>() ??
+            [],
       );
     });
   }
@@ -79,7 +85,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
 
   Future<void> _handleUrl(String? url) async {
     if (url == null) return;
-    
+
     try {
       final uri = Uri.parse(url);
       if (await canLaunchUrl(uri)) {
@@ -105,32 +111,39 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
   }
 
   Widget _buildSmallDisplayCard(card_model.ContextualCard card) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      elevation: 2,
-      child: ListTile(
-        leading: _buildCardIcon(card),
-        title: Text(
-          card.formattedTitle?.text ?? card.title ?? '',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: double.infinity),
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 8),
+        elevation: 2,
+        child: ListTile(
+          leading: _buildCardIcon(card),
+          title: Text(
+            card.formattedTitle?.text ?? card.title ?? '',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          subtitle: _buildCardDescription(card),
+          onTap: () => _handleUrl(card.url),
         ),
-        subtitle: _buildCardDescription(card),
-        onTap: () => _handleUrl(card.url),
       ),
     );
   }
 
   Widget? _buildCardIcon(card_model.ContextualCard card) {
     if (card.icon?.imageUrl == null) return null;
-    
+
     return ClipRRect(
       borderRadius: BorderRadius.circular(25),
       child: CachedNetworkImage(
         imageUrl: card.icon!.imageUrl!,
-        width: 50,
-        height: 50,
+        width: 100,
+        height: 100,
         fit: BoxFit.cover,
-        placeholder: (context, url) => const CircularProgressIndicator(),
+        placeholder: (context, url) => const SizedBox(
+          width: 100,
+          height: 100,
+          child: Center(child: CircularProgressIndicator()),
+        ),
         errorWidget: (context, url, error) => const Icon(Icons.error),
       ),
     );
@@ -139,34 +152,39 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
   Widget? _buildCardDescription(card_model.ContextualCard card) {
     final description = card.formattedDescription?.text ?? card.description;
     if (description == null) return null;
-    
+
     return Text(description);
   }
 
   Widget _buildBigDisplayCard(ContextualCard card) {
-    if (_dismissedCards.contains(card.id) || _remindLaterCards.contains(card.id)) {
+    if (_dismissedCards.contains(card.id) ||
+        _remindLaterCards.contains(card.id)) {
       return const SizedBox.shrink();
     }
 
-    return GestureDetector(
-      onLongPress: () => _showActionButtons(card),
-      onTap: () => _handleUrl(card.url),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        decoration: BoxDecoration(
-          color: card.bgColor != null ? _parseColor(card.bgColor!) : null,
-          borderRadius: BorderRadius.circular(12),
-          gradient: _buildGradient(card.bgGradient),
-          image: _buildBackgroundImage(card.bgImage),
-        ),
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildCardTitle(card),
-            _buildCardDescriptionText(card),
-            _buildCtaButtons(card),
-          ],
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: double.infinity),
+      child: GestureDetector(
+        onLongPress: () => _showActionButtons(card),
+        onTap: () => _handleUrl(card.url),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            color: card.bgColor != null ? _parseColor(card.bgColor!) : null,
+            borderRadius: BorderRadius.circular(12),
+            gradient: _buildGradient(card.bgGradient),
+            image: _buildBackgroundImage(card.bgImage),
+          ),
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildCardTitle(card),
+              _buildCardDescriptionText(card),
+              _buildCtaButtons(card),
+            ],
+          ),
         ),
       ),
     );
@@ -174,7 +192,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
 
   LinearGradient? _buildGradient(card_model.Gradient? gradient) {
     if (gradient == null) return null;
-    
+
     return LinearGradient(
       colors: gradient.colors.map(_parseColor).toList(),
       begin: Alignment.topLeft,
@@ -184,7 +202,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
 
   DecorationImage? _buildBackgroundImage(CardImage? bgImage) {
     if (bgImage?.imageUrl == null) return null;
-    
+
     return DecorationImage(
       image: CachedNetworkImageProvider(bgImage!.imageUrl!),
       fit: BoxFit.cover,
@@ -194,7 +212,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
   Widget _buildCardTitle(ContextualCard card) {
     final title = card.formattedTitle?.text ?? card.title;
     if (title == null) return const SizedBox.shrink();
-    
+
     return Text(
       title,
       style: const TextStyle(
@@ -208,12 +226,13 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
   Widget _buildCardDescriptionText(ContextualCard card) {
     final description = card.formattedDescription?.text ?? card.description;
     if (description == null) return const SizedBox.shrink();
-    
+
     return Padding(
       padding: const EdgeInsets.only(top: 8),
       child: Text(
         description,
         style: TextStyle(
+          // ignore: deprecated_member_use
           color: Colors.white.withOpacity(0.8),
           fontSize: 16,
         ),
@@ -223,11 +242,15 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
 
   Widget _buildCtaButtons(ContextualCard card) {
     if (card.cta.isEmpty) return const SizedBox.shrink();
-    
+
     return Padding(
       padding: const EdgeInsets.only(top: 16),
-      child: Row(
-        children: card.cta.map((cta) => _buildCtaButton(cta)).toList(),
+      child: SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: card.cta.map((cta) => _buildCtaButton(cta)).toList(),
+        ),
       ),
     );
   }
@@ -238,8 +261,11 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
       child: ElevatedButton(
         onPressed: () => _handleUrl(cta.url),
         style: ElevatedButton.styleFrom(
-          backgroundColor: cta.bgColor != null ? _parseColor(cta.bgColor!) : Colors.white,
-          foregroundColor: cta.textColor != null ? _parseColor(cta.textColor!) : Colors.black,
+          backgroundColor:
+              cta.bgColor != null ? _parseColor(cta.bgColor!) : Colors.white,
+          foregroundColor: cta.textColor != null
+              ? _parseColor(cta.textColor!)
+              : Colors.black,
         ),
         child: Text(cta.text),
       ),
@@ -288,16 +314,19 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
         child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: group.cards.length,
-          itemBuilder: (context, index) => _buildCard(
-            group.cards[index],
-            group.designType,
-            group.height,
-          ),
+          itemBuilder: (context, index) {
+            final card = group.cards[index];
+            return SizedBox(
+              width: _calculateCardWidth(card, group.designType, group.height),
+              child: _buildCard(card, group.designType, group.height),
+            );
+          },
         ),
       );
     }
 
     return Column(
+      mainAxisSize: MainAxisSize.min,
       children: group.cards
           .map((card) => _buildCard(card, group.designType, group.height))
           .toList(),
@@ -322,79 +351,113 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
   }
 
   Widget _buildImageCard(ContextualCard card) {
-    return GestureDetector(
-      onTap: () => _handleUrl(card.url),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          color: Colors.white,
-        ),
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(12),
-          child: card.bgImage?.imageUrl != null
-              ? CachedNetworkImage(
-                  imageUrl: card.bgImage!.imageUrl!,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  placeholder: (context, url) => const CircularProgressIndicator(),
-                  errorWidget: (context, url, error) => const Icon(Icons.error),
-                )
-              : Container(
-                  height: 200,
-                  color: Colors.grey[300],
-                ),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: double.infinity),
+      child: GestureDetector(
+        onTap: () => _handleUrl(card.url),
+        child: Container(
+          margin: const EdgeInsets.only(bottom: 16),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            color: Colors.white,
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: card.bgImage?.imageUrl != null
+                ? CachedNetworkImage(
+                    imageUrl: card.bgImage!.imageUrl!,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    placeholder: (context, url) => Container(
+                      height: 200,
+                      color: Colors.grey[300],
+                      child: const Center(child: CircularProgressIndicator()),
+                    ),
+                    errorWidget: (context, url, error) =>
+                        const Icon(Icons.error),
+                  )
+                : Container(
+                    height: 200,
+                    color: Colors.grey[300],
+                  ),
+          ),
         ),
       ),
     );
   }
 
   Widget _buildSmallCardWithArrow(ContextualCard card) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: ListTile(
-        leading: card.icon?.imageUrl != null
-            ? CircleAvatar(
-                backgroundImage: CachedNetworkImageProvider(card.icon!.imageUrl!),
-              )
-            : null,
-        title: Text(
-          card.formattedTitle?.text ?? card.title ?? '',
-          style: const TextStyle(fontWeight: FontWeight.bold),
+    return ConstrainedBox(
+      constraints: const BoxConstraints(maxWidth: double.infinity),
+      child: Card(
+        margin: const EdgeInsets.only(bottom: 8),
+        child: ListTile(
+          leading: card.icon?.imageUrl != null
+              ? CircleAvatar(
+                  backgroundImage:
+                      CachedNetworkImageProvider(card.icon!.imageUrl!),
+                )
+              : null,
+          title: Text(
+            card.formattedTitle?.text ?? card.title ?? '',
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+          trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+          onTap: () => _handleUrl(card.url),
         ),
-        trailing: const Icon(Icons.arrow_forward_ios, size: 16),
-        onTap: () => _handleUrl(card.url),
       ),
     );
   }
 
   Widget _buildDynamicWidthCard(ContextualCard card, double height) {
     if (card.bgImage?.imageUrl == null) return const SizedBox.shrink();
-    
+
     final aspectRatio = _getAspectRatio(card.bgImage!.imageUrl!);
-    
-    return GestureDetector(
-      onTap: () => _handleUrl(card.url),
-      child: Container(
-        height: height,
-        width: height * aspectRatio,
-        margin: const EdgeInsets.only(right: 8),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          gradient: _buildGradient(card.bgGradient),
-          image: _buildBackgroundImage(card.bgImage),
+    final width = height * aspectRatio;
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: width),
+      child: GestureDetector(
+        onTap: () => _handleUrl(card.url),
+        child: Container(
+          height: height,
+          width: width,
+          margin: const EdgeInsets.only(right: 8),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(12),
+            gradient: _buildGradient(card.bgGradient),
+            image: _buildBackgroundImage(card.bgImage),
+          ),
         ),
       ),
     );
   }
 
+  double _calculateCardWidth(
+      ContextualCard card, String designType, double? height) {
+    switch (designType) {
+      case 'HC9':
+        final width =
+            (height ?? 120) * _getAspectRatio(card.bgImage?.imageUrl ?? '');
+        return width.isFinite ? width : MediaQuery.of(context).size.width - 32;
+      case 'HC3':
+      case 'HC5':
+        return MediaQuery.of(context).size.width - 32;
+      default:
+        return MediaQuery.of(context).size.width - 32;
+    }
+  }
+
   double _getAspectRatio(String imageUrl) {
     if (!imageUrl.contains('aspect_ratio=')) return 1.0;
-    
-    final aspectRatio = double.tryParse(
-      imageUrl.split('aspect_ratio=')[1],
-    );
-    return aspectRatio ?? 1.0;
+    try {
+      final aspectRatio = double.tryParse(
+        imageUrl.split('aspect_ratio=')[1].split('&')[0],
+      );
+      return aspectRatio?.isFinite == true ? aspectRatio! : 1.0;
+    } catch (e) {
+      return 1.0;
+    }
   }
 
   @override
@@ -414,11 +477,29 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
         onRefresh: _loadCards,
         child: _isLoading
             ? const Center(child: CircularProgressIndicator())
-            : ListView.builder(
-                padding: const EdgeInsets.all(16),
-                itemCount: _cardGroups.length,
-                itemBuilder: (context, index) => _buildCardGroup(_cardGroups[index]),
-              ),
+            : _cardGroups.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          'No cards available',
+                          style: TextStyle(fontSize: 16),
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: _loadCards,
+                          child: const Text('Refresh'),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.all(16),
+                    itemCount: _cardGroups.length,
+                    itemBuilder: (context, index) =>
+                        _buildCardGroup(_cardGroups[index]),
+                  ),
       ),
     );
   }
