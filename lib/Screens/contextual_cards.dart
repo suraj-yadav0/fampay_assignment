@@ -119,7 +119,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
         child: ListTile(
           leading: _buildCardIcon(card),
           title: Text(
-            card.formattedTitle?.text ?? card.title ?? '',
+            card.formattedTitle?.text ?? card.title ?? 'Small Display card',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           subtitle: _buildCardDescription(card),
@@ -136,12 +136,12 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
       borderRadius: BorderRadius.circular(25),
       child: CachedNetworkImage(
         imageUrl: card.icon!.imageUrl!,
-        width: 100,
-        height: 100,
+        width: 50,
+        height: 50,
         fit: BoxFit.cover,
         placeholder: (context, url) => const SizedBox(
-          width: 100,
-          height: 100,
+          width: 50,
+          height: 50,
           child: Center(child: CircularProgressIndicator()),
         ),
         errorWidget: (context, url, error) => const Icon(Icons.error),
@@ -178,7 +178,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
           padding: const EdgeInsets.all(16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
+            mainAxisSize: MainAxisSize.max,
             children: [
               _buildCardTitle(card),
               _buildCardDescriptionText(card),
@@ -216,7 +216,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
     return Text(
       title,
       style: const TextStyle(
-        color: Colors.white,
+        color: Colors.black,
         fontSize: 24,
         fontWeight: FontWeight.bold,
       ),
@@ -233,7 +233,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
         description,
         style: TextStyle(
           // ignore: deprecated_member_use
-          color: Colors.white.withOpacity(0.8),
+         // color: Colors.white.withOpacity(0.8),
           fontSize: 16,
         ),
       ),
@@ -281,7 +281,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.alarm),
-              title: const Text('Remind Later'),
+              title: const Text('Remind Later',style: TextStyle(color: Colors.white),),
               onTap: () => _handleCardAction(card, isRemindLater: true),
             ),
             ListTile(
@@ -399,7 +399,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
                 )
               : null,
           title: Text(
-            card.formattedTitle?.text ?? card.title ?? '',
+            card.formattedTitle?.text ?? card.title ?? 'Small Card With Arrow',
             style: const TextStyle(fontWeight: FontWeight.bold),
           ),
           trailing: const Icon(Icons.arrow_forward_ios, size: 16),
