@@ -1,3 +1,4 @@
+import 'package:fampay_assignment/Screens/contextual_cards.dart';
 import 'package:fampay_assignment/Widgets/contextual_card.dart';
 import 'package:flutter/material.dart';
 
@@ -16,7 +17,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         fontFamily: 'Inter',
       ),
-      home: const HomeScreen(),
+      home: ContextualCardsScreen(),
     );
   }
 }
