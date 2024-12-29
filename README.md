@@ -1,3 +1,4 @@
+
 # FamPay Assignment - Contextual Cards UI
 
 A Flutter application that displays different types of cards in a dynamic UI based on API response. The app showcases various card designs and interactions following FamPay's design system.
@@ -24,6 +25,16 @@ A Flutter application that displays different types of cards in a dynamic UI bas
   - Action buttons
   - Loading states
   - Error handling with SnackBar notifications
+
+## Screenshots
+
+Below are screenshots demonstrating the app's user interface:
+
+![Screenshot 1](https://github.com/user-attachments/assets/d6517a63-20f0-4729-bd86-6ac6c4c89821)
+*Card Display Example 1*
+
+![Screenshot 2](https://github.com/user-attachments/assets/266af0b4-de1b-4e7d-9565-b4281569821f)
+*Card Display Example 2*
 
 ## Dependencies
 
@@ -158,3 +169,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - FamPay design system
 - Flutter community
 - All open-source dependencies used in this project
+
