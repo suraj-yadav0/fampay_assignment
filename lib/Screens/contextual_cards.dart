@@ -109,27 +109,54 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
   Color _parseColor(String hexColor) {
     return Color(int.parse(hexColor.substring(1), radix: 16) + 0xFF000000);
   }
-
-   Widget _buildSmallDisplayCard(ContextualCard card) {
+ Widget _buildSmallDisplayCard(ContextualCard card) {
     return Container(
+     
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Card(
-        elevation: 4,
+        elevation: 2,
+        color: Colors.orange,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
         child: ListTile(
-          contentPadding: const EdgeInsets.all(16),
-          leading: _buildCardIcon(card),
-          title: Text(
-            card.formattedTitle?.text ?? card.title ?? '',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 16,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          leading: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Colors.black.withOpacity(0.1),
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(20),
+              child: card.icon?.imageUrl != null
+                ? Image.network(
+                    card.icon!.imageUrl!,
+                    fit: BoxFit.cover,
+                  )
+                : const Icon(Icons.person, color: Colors.black54),
             ),
           ),
-          subtitle: _buildCardDescription(card),
-          onTap: () => _handleUrl(card.url),
+          title: Text(
+            // card.formattedTitle?.text ?? 
+            // card.title ?? 
+            'Small display card',
+            style: const TextStyle(
+              fontWeight: FontWeight.w500,
+              fontSize: 14,
+              color: Colors.black87,
+            ),
+          ),
+          subtitle: card.description != null 
+            ? Text(
+                'Arya Stark',
+                style: TextStyle(
+                  color: Colors.black.withOpacity(0.7),
+                  fontSize: 12,
+                ),
+              )
+            : null,
         ),
       ),
     );
@@ -155,13 +182,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
     );
   }
 
-  Widget? _buildCardDescription(card_model.ContextualCard card) {
-    final description = card.formattedDescription?.text ?? card.description;
-    if (description == null) return null;
-
-    return Text(description);
-  }
-  Widget _buildBigDisplayCard(ContextualCard card) {
+ Widget _buildBigDisplayCard(ContextualCard card) {
     if (_dismissedCards.contains(card.id) ||
         _remindLaterCards.contains(card.id)) {
       return const SizedBox.shrink();
@@ -169,8 +190,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      width: double.infinity,
-      height: 300, // Adjusted height to match the design
+      height: 350,
       child: GestureDetector(
         onLongPress: () => _showActionButtons(card),
         onTap: () => _handleUrl(card.url),
@@ -181,7 +201,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
           ),
           child: Container(
             decoration: BoxDecoration(
-              color: card.bgColor != null ? _parseColor(card.bgColor!) : Colors.blue[700],
+              color: Colors.deepPurple[700], // Default purple background
               borderRadius: BorderRadius.circular(12),
               gradient: _buildGradient(card.bgGradient),
             ),
@@ -189,31 +209,59 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                if (card.icon != null) 
-                  Image.network(
-                    card.icon!.imageUrl!,
-                    height: 48,
-                    width: 48,
-                  ),
+                Row(
+                  children: [
+
+                    Image.asset("assets/Asset 15.png"),
+                    // if (card.icon?.imageUrl != null)
+                    //   Container(
+                    //     width: 64,
+                    //     height: 64,
+                    //     decoration: BoxDecoration(
+                    //       shape: BoxShape.circle,
+                    //      // color: Colors.white.withOpacity(0.2),
+                    //     ),
+                    //     padding: const EdgeInsets.all(12),
+                    //     child: Image.network(
+                    //       card.icon!.imageUrl!,
+                    //       color: Colors.white,
+                    //     ),
+                    //   ),
+                  ],
+                ),
                 const SizedBox(height: 12),
                 Text(
-                  card.formattedTitle?.text ?? card.title ?? '',
+                  
+                  'Big display card with action',
                   style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
+                    color: Colors.yellow,
+                    fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  card.formattedDescription?.text ?? card.description ?? '',
+                  card.formattedDescription?.text ?? 
+                  card.description ?? 
+                  'This is a sample text for the subtitle that you can add to contextual cards.',
                   style: const TextStyle(
                     color: Colors.white70,
                     fontSize: 14,
                   ),
                 ),
                 const Spacer(),
-                _buildCtaButtons(card),
+                ElevatedButton(
+                  onPressed: () => _handleUrl(card.url),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.black,
+                    foregroundColor: Colors.white,
+                    minimumSize: const Size(128, 42),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                  child: const Text('Action'),
+                ),
               ],
             ),
           ),
@@ -234,77 +282,79 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
     );
   }
 
-  DecorationImage? _buildBackgroundImage(CardImage? bgImage) {
-    if (bgImage?.imageUrl == null) return null;
+  // DecorationImage? _buildBackgroundImage(CardImage? bgImage) {
+  //   if (bgImage?.imageUrl == null) return null;
 
-    return DecorationImage(
-      image: CachedNetworkImageProvider(bgImage!.imageUrl!),
-      fit: BoxFit.cover,
-    );
-  }
+  //   return DecorationImage(
+  //     image: CachedNetworkImageProvider(bgImage!.imageUrl!),
+  //     fit: BoxFit.cover,
+  //   );
+  // }
 
-  Widget _buildCardTitle(ContextualCard card) {
-    final title = card.formattedTitle?.text ?? card.title;
-    if (title == null) return const SizedBox.shrink();
+  // Widget _buildCardTitle(ContextualCard card) {
+  //   final title = card.formattedTitle?.text ?? card.title;
+  //   if (title == null) return const SizedBox.shrink();
 
-    return Text(
-      title,
-      style: const TextStyle(
-        color: Colors.black,
-        fontSize: 24,
-        fontWeight: FontWeight.bold,
-      ),
-    );
-  }
+  //   return Text(
+  //     title,
+  //     style: const TextStyle(
+  //       color: Colors.black,
+  //       fontSize: 24,
+  //       fontWeight: FontWeight.bold,
+  //     ),
+  //   );
+  // }
 
-  Widget _buildCardDescriptionText(ContextualCard card) {
-    final description = card.formattedDescription?.text ?? card.description;
-    if (description == null) return const SizedBox.shrink();
+  // Widget _buildCardDescriptionText(ContextualCard card) {
+  //   final description = card.formattedDescription?.text ?? card.description;
+  //   if (description == null) return const SizedBox.shrink();
 
-    return Padding(
-      padding: const EdgeInsets.only(top: 8),
-      child: Text(
-        description,
-        style: TextStyle(
-          // ignore: deprecated_member_use
-         // color: Colors.white.withOpacity(0.8),
-          fontSize: 16,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCtaButtons(ContextualCard card) {
-    if (card.cta.isEmpty) return const SizedBox.shrink();
-
-    return Padding(
-      padding: const EdgeInsets.only(top: 16),
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: card.cta.map((cta) => _buildCtaButton(cta)).toList(),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildCtaButton(CallToAction cta) {
-    return Padding(
-      padding: const EdgeInsets.only(right: 8),
-      child: ElevatedButton(
-        onPressed: () => _handleUrl(cta.url),
+  //   return Padding(
+  //     padding: const EdgeInsets.only(top: 8),
+  //     child: Text(
+  //       description,
+  //       style: TextStyle(
+  //         // ignore: deprecated_member_use
+  //        // color: Colors.white.withOpacity(0.8),
+  //         fontSize: 16,
+  //       ),
+  //     ),
+  //   );
+  // }
+ Widget _buildCtaButtons(ContextualCard card) {
+    if (card.cta.isEmpty) {
+      // Add a default action button if no CTA is provided
+      return ElevatedButton(
+        onPressed: () {},
         style: ElevatedButton.styleFrom(
-          backgroundColor:
-              cta.bgColor != null ? _parseColor(cta.bgColor!) : Colors.white,
-          foregroundColor: cta.textColor != null
-              ? _parseColor(cta.textColor!)
-              : Colors.black,
+          backgroundColor: Colors.black,
+          foregroundColor: Colors.white,
         ),
-        child: Text(cta.text),
-      ),
+        child: const Text('Action'),
+      );
+    }
+    
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: card.cta.map((cta) => Padding(
+        padding: const EdgeInsets.only(right: 8),
+        child: ElevatedButton(
+          onPressed: () => _handleUrl(cta.url),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: cta.bgColor != null 
+              ? _parseColor(cta.bgColor!) 
+              : Colors.black,
+            foregroundColor: cta.textColor != null
+              ? _parseColor(cta.textColor!)
+              : Colors.white,
+          ),
+          child: Text(cta.text),
+        ),
+      )).toList(),
     );
   }
+
+
 
   void _showActionButtons(ContextualCard card) {
     showModalBottomSheet(
@@ -353,7 +403,8 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
         );
       case 'HC9':
         return SizedBox(
-          height: 120,
+          
+          height: 195,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -366,26 +417,27 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
     }
   }
 
-  Widget _buildCard(ContextualCard card, String designType, double? height) {
-    switch (designType) {
-      case 'HC1':
-        return _buildSmallDisplayCard(card);
-      case 'HC3':
-        return _buildBigDisplayCard(card);
-      case 'HC5':
-        return _buildImageCard(card);
-      case 'HC6':
-        return _buildSmallCardWithArrow(card);
-      case 'HC9':
-        return _buildDynamicWidthCard(card);
-      default:
-        return const SizedBox.shrink();
-    }
-  }
- Widget _buildImageCard(ContextualCard card) {
+  // Widget _buildCard(ContextualCard card, String designType, double? height) {
+  //   switch (designType) {
+  //     case 'HC1':
+  //       return _buildSmallDisplayCard(card);
+  //     case 'HC3':
+  //       return _buildBigDisplayCard(card);
+  //     case 'HC5':
+  //       return _buildImageCard(card);
+  //     case 'HC6':
+  //       return _buildSmallCardWithArrow(card);
+  //     case 'HC9':
+  //       return _buildDynamicWidthCard(card);
+  //     default:
+  //       return const SizedBox.shrink();
+  //   }
+  // }
+
+  Widget _buildImageCard(ContextualCard card) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      height: 120,
+      height: 130,
       child: Card(
         elevation: 4,
         shape: RoundedRectangleBorder(
@@ -402,27 +454,28 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
                   card.bgImage!.imageUrl!,
                   fit: BoxFit.cover,
                 ),
-              if (card.formattedTitle != null)
-                Positioned(
-                  left: 16,
-                  bottom: 16,
-                  child: Text(
-                    card.formattedTitle!.text,
-                    style: TextStyle(
-                      color: 
-                         Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
+              // Positioned(
+              //   left: 16,
+              //   bottom: 16,
+              //   child: Text(
+              //     card.formattedTitle?.text ?? 
+              //     card.title ?? 
+              //     'Image Card',
+              //     style: TextStyle(
+              //       color: Colors.white,
+              //       fontSize: 16,
+              //       fontWeight: FontWeight.bold,
+              //     ),
+              //   ),
+              // ),
             ],
           ),
         ),
       ),
     );
   }
-   Widget _buildSmallCardWithArrow(ContextualCard card) {
+    
+  Widget _buildSmallCardWithArrow(ContextualCard card) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Card(
@@ -435,33 +488,33 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
           leading: Container(
             width: 40,
             height: 40,
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               shape: BoxShape.circle,
-              color: Colors.grey[200],
+              color: Colors.black,
             ),
-            child: card.icon?.imageUrl != null
-              ? ClipRRect(
-                  borderRadius: BorderRadius.circular(20),
-                  child: Image.network(
-                    card.icon!.imageUrl!,
-                    fit: BoxFit.cover,
-                  ),
-                )
-              : const Icon(Icons.account_circle),
+            child: const Icon(
+              Icons.person,
+              color: Colors.white,
+            ),
           ),
-          title: Text(
-            card.formattedTitle?.text ?? card.title ?? '',
-            style: const TextStyle(
+          title: const Text(
+            'Small card with arrow',
+            style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 14,
+              color: Colors.black87,
             ),
           ),
-          trailing: const Icon(Icons.arrow_forward_ios, size: 16),
+          trailing: const Icon(Icons.arrow_forward_ios, 
+            size: 16,
+            color: Colors.black54,
+          ),
           onTap: () => _handleUrl(card.url),
         ),
       ),
     );
   }
+
  Widget _buildDynamicWidthCard(ContextualCard card) {
     return Container(
       width: 120,
@@ -482,64 +535,66 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
     );
   }
 
-  double _calculateCardWidth(
-      ContextualCard card, String designType, double? height) {
-    switch (designType) {
-      case 'HC9':
-        final width =
-            (height ?? 120) * _getAspectRatio(card.bgImage?.imageUrl ?? '');
-        return width.isFinite ? width : MediaQuery.of(context).size.width - 32;
-      case 'HC3':
-      case 'HC5':
-        return MediaQuery.of(context).size.width - 32;
-      default:
-        return MediaQuery.of(context).size.width - 32;
-    }
-  }
+  // double _calculateCardWidth(
+  //     ContextualCard card, String designType, double? height) {
+  //   switch (designType) {
+  //     case 'HC9':
+  //       final width =
+  //           (height ?? 120) * _getAspectRatio(card.bgImage?.imageUrl ?? '');
+  //       return width.isFinite ? width : MediaQuery.of(context).size.width - 32;
+  //     case 'HC3':
+  //     case 'HC5':
+  //       return MediaQuery.of(context).size.width - 32;
+  //     default:
+  //       return MediaQuery.of(context).size.width - 32;
+  //   }
+  // }
 
-  double _getAspectRatio(String imageUrl) {
-    if (!imageUrl.contains('aspect_ratio=')) return 1.0;
-    try {
-      final aspectRatio = double.tryParse(
-        imageUrl.split('aspect_ratio=')[1].split('&')[0],
-      );
-      return aspectRatio?.isFinite == true ? aspectRatio! : 1.0;
-    } catch (e) {
-      return 1.0;
-    }
-  }
+  // double _getAspectRatio(String imageUrl) {
+  //   if (!imageUrl.contains('aspect_ratio=')) return 1.0;
+  //   try {
+  //     final aspectRatio = double.tryParse(
+  //       imageUrl.split('aspect_ratio=')[1].split('&')[0],
+  //     );
+  //     return aspectRatio?.isFinite == true ? aspectRatio! : 1.0;
+  //   } catch (e) {
+  //     return 1.0;
+  //   }
+  // }
 
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text(
-              'fampay',
-              style: TextStyle(
-                color: Colors.black,
-                fontWeight: FontWeight.bold,
+    return SafeArea(
+      child: Scaffold(
+        backgroundColor: Colors.grey[100],
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          elevation: 0,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                'fampay',
+                style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-
-          ],
+      
+            ],
+          ),
+          centerTitle: true,
         ),
-        centerTitle: true,
-      ),
-      body: RefreshIndicator(
-        onRefresh: _loadCards,
-        child: _isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : ListView.builder(
-                itemCount: _cardGroups.length,
-                itemBuilder: (context, index) => _buildCardGroup(_cardGroups[index]),
-              ),
+        body: RefreshIndicator(
+          onRefresh: _loadCards,
+          child: _isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : ListView.builder(
+                  itemCount: _cardGroups.length,
+                  itemBuilder: (context, index) => _buildCardGroup(_cardGroups[index]),
+                ),
+        ),
       ),
     );
   }
