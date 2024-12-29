@@ -2,7 +2,7 @@ import 'package:fampay_assignment/models/card_model.dart' as card_model;
 import 'package:fampay_assignment/models/card_model.dart';
 import 'package:fampay_assignment/services/api_services.dart';
 import 'package:flutter/material.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -162,25 +162,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
     );
   }
 
-  Widget? _buildCardIcon(card_model.ContextualCard card) {
-    if (card.icon?.imageUrl == null) return null;
-
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(25),
-      child: CachedNetworkImage(
-        imageUrl: card.icon!.imageUrl!,
-        width: 50,
-        height: 50,
-        fit: BoxFit.cover,
-        placeholder: (context, url) => const SizedBox(
-          width: 50,
-          height: 50,
-          child: Center(child: CircularProgressIndicator()),
-        ),
-        errorWidget: (context, url, error) => const Icon(Icons.error),
-      ),
-    );
-  }
+ 
 
  Widget _buildBigDisplayCard(ContextualCard card) {
     if (_dismissedCards.contains(card.id) ||
@@ -232,9 +214,19 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
                 const SizedBox(height: 12),
                 Text(
                   
-                  'Big display card with action',
+                  'Big display card ',
                   style: const TextStyle(
-                    color: Colors.yellow,
+                    color: Colors.orangeAccent,
+                    fontSize: 30,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+               
+                Text(
+                  
+                  'with action',
+                  style: const TextStyle(
+                    color: Colors.white,
                     fontSize: 30,
                     fontWeight: FontWeight.bold,
                   ),
@@ -282,79 +274,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
     );
   }
 
-  // DecorationImage? _buildBackgroundImage(CardImage? bgImage) {
-  //   if (bgImage?.imageUrl == null) return null;
-
-  //   return DecorationImage(
-  //     image: CachedNetworkImageProvider(bgImage!.imageUrl!),
-  //     fit: BoxFit.cover,
-  //   );
-  // }
-
-  // Widget _buildCardTitle(ContextualCard card) {
-  //   final title = card.formattedTitle?.text ?? card.title;
-  //   if (title == null) return const SizedBox.shrink();
-
-  //   return Text(
-  //     title,
-  //     style: const TextStyle(
-  //       color: Colors.black,
-  //       fontSize: 24,
-  //       fontWeight: FontWeight.bold,
-  //     ),
-  //   );
-  // }
-
-  // Widget _buildCardDescriptionText(ContextualCard card) {
-  //   final description = card.formattedDescription?.text ?? card.description;
-  //   if (description == null) return const SizedBox.shrink();
-
-  //   return Padding(
-  //     padding: const EdgeInsets.only(top: 8),
-  //     child: Text(
-  //       description,
-  //       style: TextStyle(
-  //         // ignore: deprecated_member_use
-  //        // color: Colors.white.withOpacity(0.8),
-  //         fontSize: 16,
-  //       ),
-  //     ),
-  //   );
-  // }
- Widget _buildCtaButtons(ContextualCard card) {
-    if (card.cta.isEmpty) {
-      // Add a default action button if no CTA is provided
-      return ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.black,
-          foregroundColor: Colors.white,
-        ),
-        child: const Text('Action'),
-      );
-    }
-    
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: card.cta.map((cta) => Padding(
-        padding: const EdgeInsets.only(right: 8),
-        child: ElevatedButton(
-          onPressed: () => _handleUrl(cta.url),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: cta.bgColor != null 
-              ? _parseColor(cta.bgColor!) 
-              : Colors.black,
-            foregroundColor: cta.textColor != null
-              ? _parseColor(cta.textColor!)
-              : Colors.white,
-          ),
-          child: Text(cta.text),
-        ),
-      )).toList(),
-    );
-  }
-
-
+ 
 
   void _showActionButtons(ContextualCard card) {
     showModalBottomSheet(
@@ -417,22 +337,6 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
     }
   }
 
-  // Widget _buildCard(ContextualCard card, String designType, double? height) {
-  //   switch (designType) {
-  //     case 'HC1':
-  //       return _buildSmallDisplayCard(card);
-  //     case 'HC3':
-  //       return _buildBigDisplayCard(card);
-  //     case 'HC5':
-  //       return _buildImageCard(card);
-  //     case 'HC6':
-  //       return _buildSmallCardWithArrow(card);
-  //     case 'HC9':
-  //       return _buildDynamicWidthCard(card);
-  //     default:
-  //       return const SizedBox.shrink();
-  //   }
-  // }
 
   Widget _buildImageCard(ContextualCard card) {
     return Container(
@@ -454,20 +358,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
                   card.bgImage!.imageUrl!,
                   fit: BoxFit.cover,
                 ),
-              // Positioned(
-              //   left: 16,
-              //   bottom: 16,
-              //   child: Text(
-              //     card.formattedTitle?.text ?? 
-              //     card.title ?? 
-              //     'Image Card',
-              //     style: TextStyle(
-              //       color: Colors.white,
-              //       fontSize: 16,
-              //       fontWeight: FontWeight.bold,
-              //     ),
-              //   ),
-              // ),
+
             ],
           ),
         ),
@@ -535,32 +426,6 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
     );
   }
 
-  // double _calculateCardWidth(
-  //     ContextualCard card, String designType, double? height) {
-  //   switch (designType) {
-  //     case 'HC9':
-  //       final width =
-  //           (height ?? 120) * _getAspectRatio(card.bgImage?.imageUrl ?? '');
-  //       return width.isFinite ? width : MediaQuery.of(context).size.width - 32;
-  //     case 'HC3':
-  //     case 'HC5':
-  //       return MediaQuery.of(context).size.width - 32;
-  //     default:
-  //       return MediaQuery.of(context).size.width - 32;
-  //   }
-  // }
-
-  // double _getAspectRatio(String imageUrl) {
-  //   if (!imageUrl.contains('aspect_ratio=')) return 1.0;
-  //   try {
-  //     final aspectRatio = double.tryParse(
-  //       imageUrl.split('aspect_ratio=')[1].split('&')[0],
-  //     );
-  //     return aspectRatio?.isFinite == true ? aspectRatio! : 1.0;
-  //   } catch (e) {
-  //     return 1.0;
-  //   }
-  // }
 
 
   @override
