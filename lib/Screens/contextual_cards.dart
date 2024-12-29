@@ -285,7 +285,7 @@ class _ContextualCardsScreenState extends State<ContextualCardsScreen> {
           children: [
             ListTile(
               leading: const Icon(Icons.alarm),
-              title: const Text('Remind Later',style: TextStyle(color: Colors.white),),
+              title: const Text('Remind Later',style: TextStyle(color: Colors.black),),
               onTap: () => _handleCardAction(card, isRemindLater: true),
             ),
             ListTile(
